@@ -1,3 +1,4 @@
+from math import e
 import pymongo
 import pymongo.errors
 import pandas as pd
@@ -23,15 +24,15 @@ else:
     print("❌ Error al conectar a la base de datos MongoDB")
 class Menu:
     def __init__(self):    
-        print("==== Menú de Librería ===")
-        print("1. Libros")
-        print("2. Clientes")
-        print("3. Salir")
-        opcion = input("Seleccione una opción: ")
-        if opcion == "1":
+        while True:
             print("1---Listado de libros...")
+            print("2---buscar libro---")
             print("2---insertar libro---")
+            print("3---insertar varios libros---")
             print("3---actualizar libro---")
+            print("4---eliminar libros---")
+            print("5---Salir")
+            
             elececion=input("Ingrese elecion: ")
             if elececion == "1": 
              libros =conexion.db.libros.find() 
@@ -40,6 +41,30 @@ class Menu:
                   
                   print(ordenarlibro)
             elif elececion == "2":
+                titulo = input("Ingrese el título del libro a buscar: ")
+                resultado = conexion.db.libros.find({"titulo": titulo})
+
+                encontrado = False
+                for libro in resultado:
+                    print("📘 Libro encontrado:")
+                    print(f"Título: {libro['titulo']}")
+                    print(f"Autor: {libro['autor']['nombre']} {libro['autor']['apellido']}")
+                    print(f"Año: {libro['año_publicacion']}")
+                    print(f"Género: {libro['genero']}")
+                    print(f"Editorial: {libro['editorial']}")
+                    print(f"Stock: {libro['stock']} unidades")
+                    print(f"Precio: ${libro['precio']}")
+                    encontrado = True
+
+                if not encontrado:
+                    print("❌ No se encontró ningún libro con ese título.")
+                if not resultado:
+                    print("No se encontró ningún libro con ese título.")
+                    
+                        
+                   
+              
+            elif elececion == "3":
                 print("Ingrese datos del libro")
                 titulo = input("Ingrese el título del libro: ")
                 año_publicacion = int(input("Año de publicación: "))
@@ -74,9 +99,11 @@ class Menu:
                     "formato": formato
                 }
                     
-            elif elececion == "3":
-                print("Actualizar libro")
-                # Aquí puedes agregar la lógica para actualizar un libro
+
+            elif elececion == "5":
+                print("Saliendo del programa...")
+                break   
+ 
            
                 
 
