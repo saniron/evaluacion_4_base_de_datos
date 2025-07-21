@@ -30,8 +30,8 @@ class Menu:
             print("2---buscar libro---")
             print("3---insertar libro---")
             print("4---insertar varios libros---")
-            print("6---actualizar libro---")
-            print("5---actualizar varios libros---")
+            print("5---actualizar libro---")
+            print("6---actualizar varios libros---")
             print("7---eliminar libros---")
             print("8---eliminar varios libros---")
             print("9---Salir")
@@ -151,10 +151,12 @@ class Menu:
                 else:
                     print("❌ No se han insertado libros.")
             elif elececion == "5":
-                titulo = input("Ingrese el título del libro a actualizar: ")
-                libro = conexion.db.libros.find_one({"titulo": {"$regex": f"^{titulo}$", "$options": "i"}})
-                if libro:
-                    print("Libro encontrado:")
+                campo = input("Ingrese el campo a buscar (titulo, autor, genero, editorial): ").strip().lower()
+                valor = input(f"Ingrese el {campo} a buscar: ")
+                resultado = conexion.db.libros.find({campo: {"$regex": f"^{valor}$", "$options": "i"}})
+                encontrado = False
+                for libro in resultado:
+                    print("📘 Libro encontrado:")
                     print(f"Título: {libro['titulo']}")
                     print(f"Autor: {libro['autor']['nombre']} {libro['autor']['apellido']}")
                     print(f"Año: {libro['año_publicacion']}")
@@ -162,35 +164,79 @@ class Menu:
                     print(f"Editorial: {libro['editorial']}")
                     print(f"Stock: {libro['stock']} unidades")
                     print(f"Precio: ${libro['precio']}")
+                    encontrado = True
 
-                    nuevo_titulo = input("Nuevo título (dejar vacío para no cambiar): ")
-                    nuevo_año = input("Nuevo año de publicación (dejar vacío para no cambiar): ")
-                    nuevo_genero = input("Nuevo género (dejar vacío para no cambiar): ")
-                    nueva_editorial = input("Nueva editorial (dejar vacío para no cambiar): ")
-                    nuevo_stock = input("Nuevo stock (dejar vacío para no cambiar): ")
-                    nuevo_precio = input("Nuevo precio (dejar vacío para no cambiar): ")
-
-                    actualizaciones = {}
-                    if nuevo_titulo:
-                        actualizaciones["titulo"] = nuevo_titulo
-                    if nuevo_año:
-                        actualizaciones["año_publicacion"] = int(nuevo_año)
-                    if nuevo_genero:
-                        actualizaciones["genero"] = nuevo_genero
-                    if nueva_editorial:
-                        actualizaciones["editorial"] = nueva_editorial
-                    if nuevo_stock:
-                        actualizaciones["stock"] = int(nuevo_stock)
-                    if nuevo_precio:
-                        actualizaciones["precio"] = int(nuevo_precio)
-
-                    if actualizaciones:
-                        conexion.db.libros.update_one({"_id": libro["_id"]}, {"$set": actualizaciones})
-                        print("✅ Libro actualizado exitosamente.")
-                    else:
-                        print("❌ No se realizaron cambios.")
-                else:
+                if not encontrado:
                     print("❌ No se encontró ningún libro con ese título.")
+                else:
+                    confirmacion = input("¿Desea actualizar este libro? (s/n): ").strip().lower()
+                    if confirmacion == 's':
+                        nuevo_titulo = input("Nuevo título (dejar vacío para no cambiar): ")
+                        nuevo_año = input("Nuevo año de publicación (dejar vacío para no cambiar): ")
+                        nuevo_genero = input("Nuevo género (dejar vacío para no cambiar): ")
+                        nuevo_editorial = input("Nueva editorial (dejar vacío para no cambiar): ")
+                        nuevo_stock = input("Nuevo stock (dejar vacío para no cambiar): ")
+                        nuevo_precio = input("Nuevo precio (dejar vacío para no cambiar): ")
+
+                        actualizaciones = {}
+                        if nuevo_titulo:
+                            actualizaciones["titulo"] = nuevo_titulo
+                        if nuevo_año:
+                            actualizaciones["año_publicacion"] = int(nuevo_año)
+                        if nuevo_genero:
+                            actualizaciones["genero"] = nuevo_genero
+                        if nuevo_editorial:
+                            actualizaciones["editorial"] = nuevo_editorial
+                        if nuevo_stock:
+                            actualizaciones["stock"] = int(nuevo_stock)
+                        if nuevo_precio:
+                            actualizaciones["precio"] = int(nuevo_precio)
+
+                        conexion.db.libros.update_one({"_id": libro["_id"]}, {"$set": actualizaciones})
+            elif elececion == "6":
+                campo = input("Ingrese el campo a buscar (titulo, autor, genero, editorial): ").strip().lower()
+                valor = input(f"Ingrese el {campo} a buscar: ")
+                resultado = conexion.db.libros.find({campo: {"$regex": f"^{valor}$", "$options": "i"}})
+                encontrado = False
+                for libro in resultado:
+                    print("📘 Libro encontrado:")
+                    print(f"Título: {libro['titulo']}")
+                    print(f"Autor: {libro['autor']['nombre']} {libro['autor']['apellido']}")
+                    print(f"Año: {libro['año_publicacion']}")
+                    print(f"Género: {libro['genero']}")
+                    print(f"Editorial: {libro['editorial']}")
+                    print(f"Stock: {libro['stock']} unidades")
+                    print(f"Precio: ${libro['precio']}")
+                    encontrado = True
+
+                if not encontrado:
+                    print("❌ No se encontró ningún libro con ese título.")
+                else:
+                    confirmacion = input("¿Desea actualizar varios libros? (s/n): ").strip().lower()
+                    if confirmacion == 's':
+                        nuevo_titulo = input("Nuevo título (dejar vacío para no cambiar): ")
+                        nuevo_año = input("Nuevo año de publicación (dejar vacío para no cambiar): ")
+                        nuevo_genero = input("Nuevo género (dejar vacío para no cambiar): ")
+                        nuevo_editorial = input("Nueva editorial (dejar vacío para no cambiar): ")
+                        nuevo_stock = input("Nuevo stock (dejar vacío para no cambiar): ")
+                        nuevo_precio = input("Nuevo precio (dejar vacío para no cambiar): ")
+
+                        actualizaciones = {}
+                        if nuevo_titulo:
+                            actualizaciones["titulo"] = nuevo_titulo
+                        if nuevo_año:
+                            actualizaciones["año_publicacion"] = int(nuevo_año)
+                        if nuevo_genero:
+                            actualizaciones["genero"] = nuevo_genero
+                        if nuevo_editorial:
+                            actualizaciones["editorial"] = nuevo_editorial
+                        if nuevo_stock:
+                            actualizaciones["stock"] = int(nuevo_stock)
+                        if nuevo_precio:
+                            actualizaciones["precio"] = int(nuevo_precio)
+
+                        conexion.db.libros.update_many({"_id": libro["_id"]}, {"$set": actualizaciones}) 
+
             elif elececion == "7":
                 campo = input("Ingrese el campo a buscar (titulo, autor, genero, editorial): ").strip().lower()
                 valor = input(f"Ingrese el {campo} a buscar: ")
@@ -213,8 +259,32 @@ class Menu:
                     confirmacion = input("¿Desea eliminar este libro? (s/n): ").strip().lower()
                     if confirmacion == 's':
                         conexion.db.libros.delete_one({"_id": libro["_id"]})
-                        print("✅ Libro eliminado exitosamente.")   
+                        print("✅ Libro eliminado exitosamente.") 
+            elif elececion == "8":
+                campo = input("Ingrese el campo a buscar (titulo, autor, genero, editorial): ").strip().lower()
+                valor = input(f"Ingrese el {campo} a buscar: ")
+                resultado = conexion.db.libros.find({campo: {"$regex": f"^{valor}$", "$options": "i"}})
+                encontrado = False
+                for libro in resultado:
+                    print("📘 Libro encontrado:")
+                    print(f"Título: {libro['titulo']}")
+                    print(f"Autor: {libro['autor']['nombre']} {libro['autor']['apellido']}")
+                    print(f"Año: {libro['año_publicacion']}")
+                    print(f"Género: {libro['genero']}")
+                    print(f"Editorial: {libro['editorial']}")
+                    print(f"Stock: {libro['stock']} unidades")
+                    print(f"Precio: ${libro['precio']}")
+                    encontrado = True
+
+                if not encontrado:
+                    print("❌ No se encontró ningún libro con ese título.")
+                else:
+                    confirmacion = input("¿Desea eliminar varios libros? (s/n): ").strip().lower()
+                    if confirmacion == 's':
+                        conexion.db.libros.delete_many({"_id": libro["_id"]})
+                        print("✅ Libros eliminados exitosamente.")  
             elif elececion == "9":
+
                 print("Saliendo del programa...")
                 break   
  
